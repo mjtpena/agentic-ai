@@ -1,0 +1,90 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Weather API (wttr.in)",
+    "description": "Get current weather information for any city using wttr.in",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://wttr.in"
+    }
+  ],
+  "paths": {
+    "/{city}": {
+      "get": {
+        "operationId": "get-weather",
+        "summary": "Get weather for a city",
+        "description": "Retrieves the current weather conditions for a specified city",
+        "parameters": [
+          {
+            "name": "city",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The city name to get weather for"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "j1"
+              ]
+            },
+            "description": "Response format (j1 for JSON)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response with weather data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "current_condition": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "temp_C": {
+                            "type": "string"
+                          },
+                          "temp_F": {
+                            "type": "string"
+                          },
+                          "weatherDesc": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "value": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          },
+                          "humidity": {
+                            "type": "string"
+                          },
+                          "windspeedKmph": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "REST Countries API",
+    "description": "Get country information including population, languages, currencies, and more",
+    "version": "3.1.0"
+  },
+  "servers": [
+    {
+      "url": "https://restcountries.com/v3.1"
+    }
+  ],
+  "paths": {
+    "/name/{name}": {
+      "get": {
+        "operationId": "get-country-by-name",
+        "summary": "Get country information by name",
+        "description": "Search for a country by its name and get detailed information including capital, population, region, languages, currencies, timezones, and borders",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The country name to search for"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Comma-separated list of fields to return (e.g. name,capital,population,currencies,languages,timezones,region,subregion,borders,flags)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Country information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

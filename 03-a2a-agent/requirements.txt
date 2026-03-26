@@ -1,0 +1,3 @@
+azure-ai-projects[agents]
+azure-identity
+python-dotenv

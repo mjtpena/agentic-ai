@@ -1,0 +1,56 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Exchange Rate API",
+    "description": "Get latest currency exchange rates",
+    "version": "6.0"
+  },
+  "servers": [
+    {
+      "url": "https://open.er-api.com/v6"
+    }
+  ],
+  "paths": {
+    "/latest/{base}": {
+      "get": {
+        "operationId": "get-exchange-rates",
+        "summary": "Get latest exchange rates for a base currency",
+        "description": "Returns the latest exchange rates for a given base currency code (e.g. USD, EUR, GBP, JPY, AUD). Includes rates for all major world currencies.",
+        "parameters": [
+          {
+            "name": "base",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The base currency code (e.g. USD, EUR, GBP, JPY, AUD)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Exchange rate data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "string"
+                    },
+                    "base_code": {
+                      "type": "string"
+                    },
+                    "rates": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
