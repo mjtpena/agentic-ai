@@ -2,7 +2,7 @@
 import re
 import os
 
-BASE = r"C:\Users\mjtpena\dev\agentic-ai"
+BASE = os.path.dirname(os.path.abspath(__file__))
 
 files = [
     os.path.join(BASE, "01-basic-agent", "execution.md"),

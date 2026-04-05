@@ -1,3 +1,17 @@
+"""
+Demo 3: A2A Orchestrator Agent — Agent-to-Agent Communication
+──────────────────────────────────────────────────────────────
+An AI Foundry orchestrator agent that delegates tasks to a remote
+A2A-compatible agent via the Agent-to-Agent protocol.
+
+The orchestrator receives user questions and routes them to a connected
+remote agent, streaming the response back delta-by-delta as it arrives.
+
+Requires:
+  • A running remote A2A-compatible agent endpoint
+  • An A2A project connection configured in the Foundry project
+"""
+
 import os
 from dotenv import load_dotenv
 from azure.identity import DefaultAzureCredential
@@ -9,10 +23,22 @@ from azure.ai.projects.models import (
 
 load_dotenv()
 
-endpoint = os.environ["FOUNDRY_PROJECT_ENDPOINT"]
-model = os.environ["FOUNDRY_MODEL_DEPLOYMENT_NAME"]
+endpoint = os.environ["AZURE_AI_PROJECT_ENDPOINT"]
+model = os.environ["AZURE_AI_MODEL_DEPLOYMENT_NAME"]
 
 AGENT_NAME = "A2AOrchestrator"
+
+SYSTEM_INSTRUCTIONS = """You are an orchestrator agent that coordinates with a remote specialist agent
+via the Agent-to-Agent (A2A) protocol.
+
+When a user asks a question:
+1. Analyze the request and determine what information the remote agent can provide.
+2. Delegate the task to the connected remote agent using your A2A tool.
+3. Synthesize the remote agent's response into a clear, well-structured answer.
+4. If the remote agent cannot fully answer, clearly state what was and wasn't covered.
+
+You excel at: task decomposition, delegation, and synthesizing multi-source responses.
+Always be transparent about which information came from the remote agent."""
 
 with (
     DefaultAzureCredential() as credential,
@@ -29,9 +55,10 @@ with (
             name=AGENT_NAME,
             definition=PromptAgentDefinition(
                 model=model,
-                instructions="You are a helpful assistant that can delegate tasks to a remote agent.",
+                instructions=SYSTEM_INSTRUCTIONS,
                 tools=[tool],
             ),
+            description="An orchestrator agent that delegates tasks via A2A protocol.",
         )
     except Exception:
         pass
@@ -41,20 +68,22 @@ with (
         agent_name=AGENT_NAME,
         definition=PromptAgentDefinition(
             model=model,
-            instructions="You are a helpful assistant that can delegate tasks to a remote agent. "
-            "When a user asks a question, use the connected agent tool to get information "
-            "from the secondary agent and relay the response back to the user.",
+            instructions=SYSTEM_INSTRUCTIONS,
             tools=[tool],
         ),
+        description="An orchestrator agent that delegates tasks via A2A protocol.",
     )
-    print(f"Agent created (name: {agent.name}, version: {agent.version})")
+    print(f"🔗 A2A Orchestrator created (name: {agent.name}, version: {agent.version})")
+    print(f"   Model: {model} | Tool: A2A (remote agent)")
+    print("=" * 70)
 
     # Get an authenticated OpenAI client
     openai_client = project_client.get_openai_client()
 
     # Interactive chat with streaming
-    user_input = input("Enter your question (e.g., 'What can the secondary agent do?'): \n")
+    user_input = input("\nEnter your question (e.g., 'What can the remote agent do?'):\n> ")
 
+    print()
     stream_response = openai_client.responses.create(
         stream=True,
         tool_choice="required",
@@ -72,12 +101,12 @@ with (
         elif event.type == "response.output_item.done":
             item = event.item
             if item.type == "remote_function_call":
-                print(f"Call ID: {getattr(item, 'call_id')}")
-                print(f"Label: {getattr(item, 'label')}")
+                print(f"  📡 Remote call — ID: {getattr(item, 'call_id')}, Label: {getattr(item, 'label')}")
         elif event.type == "response.completed":
             print(f"\nFull response: {event.response.output_text}")
 
     # Clean up
-    print("\nCleaning up...")
+    print(f"\n{'=' * 70}")
+    print("Cleaning up...")
     project_client.agents.delete_version(agent_name=agent.name, agent_version=agent.version)
-    print("Agent deleted.")
+    print("✅ Agent deleted.")

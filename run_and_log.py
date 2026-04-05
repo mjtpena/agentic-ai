@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 demo_dir = sys.argv[1]  # e.g. 01-basic-agent
 script = sys.argv[2]    # e.g. src/main.py
-base = r"C:\Users\mjtpena\dev\agentic-ai"
+base = os.path.dirname(os.path.abspath(__file__))
 
 demo_path = os.path.join(base, demo_dir)
 script_path = os.path.join(demo_path, script)
