@@ -6,10 +6,10 @@ Four self-contained, progressively advanced demos showcasing [Azure AI Foundry A
 
 | Demo | What You'll Learn | Key Capabilities |
 | --- | --- | --- |
-| [01-basic-agent](01-basic-agent/) | Create an agent that autonomously writes & runs Python code | Code Interpreter tool, Monte Carlo simulations, statistical analysis |
-| [02-openapi-agent](02-openapi-agent/) | Connect an agent to live external APIs via OpenAPI specs | OpenAPI tool calling, multi-API orchestration (weather, countries, exchange rates) |
-| [03-a2a-agent](03-a2a-agent/) | Orchestrate multiple agents across services using A2A protocol | Agent-to-Agent (A2A) communication, streaming responses, distributed workflows |
-| [04-agent-framework](04-agent-framework/) | Build multi-agent pipelines with the Microsoft Agent Framework SDK | Sequential & concurrent orchestration, custom function tools, streaming output |
+| [01-basic-agent](01-basic-agent/) | Create an agent that autonomously writes & runs Python code | Code Interpreter tool, Monte Carlo simulations, statistical analysis, linear programming |
+| [02-openapi-agent](02-openapi-agent/) | Connect an agent to multiple live external APIs via OpenAPI specs | OpenAPI tool calling, multi-API orchestration (weather, countries, exchange rates), travel briefings |
+| [03-a2a-agent](03-a2a-agent/) | Orchestrate multiple agents across services using A2A protocol | Agent-to-Agent (A2A) communication, streaming responses, task delegation |
+| [04-agent-framework](04-agent-framework/) | Build multi-agent pipelines with the Microsoft Agent Framework SDK | Sequential & concurrent orchestration, custom function tools, streaming output, debate pattern |
 
 ## Prerequisites
 

@@ -38,8 +38,8 @@ Edit `.env` with values from the deployment outputs:
 
 | Variable                        | Source                       |
 | ------------------------------- | ---------------------------- |
-| `FOUNDRY_PROJECT_ENDPOINT`      | `projectEndpoint` output     |
-| `FOUNDRY_MODEL_DEPLOYMENT_NAME` | `modelDeploymentName` output |
+| `AZURE_AI_PROJECT_ENDPOINT`     | `projectEndpoint` output     |
+| `AZURE_AI_MODEL_DEPLOYMENT_NAME`| `modelDeploymentName` output |
 | `A2A_PROJECT_CONNECTION_ID`     | `a2aConnectionId` output     |
 
 ## Run the Demo

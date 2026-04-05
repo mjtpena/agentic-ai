@@ -1,6 +1,6 @@
-# Demo 2: Foundry Agent with OpenAPI Tool
+# Demo 2: Travel Intelligence Agent — Multi-API Orchestration
 
-This demo provisions an Azure AI Foundry account, project, and GPT-4o deployment, then creates an agent that calls a weather API via an OpenAPI 3.0 specification with anonymous authentication.
+This demo provisions an Azure AI Foundry account, project, and GPT-5.4-mini deployment, then creates a **Travel Intelligence Agent** that orchestrates 3 live external APIs simultaneously via OpenAPI 3.0 specifications to generate comprehensive travel briefings.
 
 ## Prerequisites
 
@@ -38,16 +38,22 @@ python src/main.py
 
 ## How It Works
 
-1. Loads the OpenAPI specification from `src/assets/weather_openapi.json` describing the [wttr.in](https://wttr.in) weather API.
-2. Creates an agent with the OpenAPI tool configured for anonymous access.
-3. Sends weather queries — the agent automatically calls the weather API and returns formatted results.
-4. Cleans up by deleting the agent version.
+1. Loads 3 OpenAPI specifications from `src/assets/`:
+   - **Weather API** ([wttr.in](https://wttr.in)) — real-time weather conditions
+   - **Countries API** ([restcountries.com](https://restcountries.com)) — country facts, languages, currencies
+   - **Exchange Rate API** ([open.er-api.com](https://open.er-api.com)) — live currency conversion rates
+2. Creates a **TravelIntelligenceAgent** with all 3 APIs configured as OpenAPI tools with anonymous authentication.
+3. Sends travel briefing requests — the agent calls all relevant APIs and synthesizes data into comprehensive, structured travel intelligence.
+4. Includes a 60-second pause between requests to respect API rate limits.
+5. Cleans up by deleting the agent version.
 
-## OpenAPI Specification
+## OpenAPI Specifications
 
-The included `weather_openapi.json` defines a single endpoint:
-
-- **GET** `/{city}?format=j1` — Returns current weather conditions in JSON format from wttr.in.
+| Spec File | API | Endpoint |
+| --- | --- | --- |
+| `weather_openapi.json` | [wttr.in](https://wttr.in) | `GET /{city}?format=j1` — current weather in JSON |
+| `countries_openapi.json` | [restcountries.com](https://restcountries.com) | `GET /v3.1/name/{name}` — country details |
+| `exchange_openapi.json` | [open.er-api.com](https://open.er-api.com) | `GET /v6/latest/{base}` — live exchange rates |
 
 ### Authentication Types Supported
 
@@ -56,24 +62,31 @@ This demo uses **anonymous** auth. The Foundry Agent Service also supports:
 - **API Key** (`project_connection` type) — Uses a Foundry project connection storing your API key.
 - **Managed Identity** (`managed_identity` type) — Uses Azure Managed Identity for token-based auth.
 
-See `src/main.py` comments for examples of each auth type.
-
 ## Expected Output
 
 ```
-Agent created (id: asst_abc123, name: WeatherAgent, version: 1)
+🌍 Travel Intelligence Agent created (name: TravelIntelligenceAgent, version: 1)
+   Model: gpt-5-4-mini | Tools: Weather API, Countries API, Exchange Rate API
+======================================================================
 
-User: What's the weather in Seattle?
-Agent: The weather in Seattle is currently cloudy with a temperature of 52°F (11°C)...
+──────────────────────────────────────────────────────────────────────
+🗺️  Briefing 1: Tokyo Travel Briefing
+──────────────────────────────────────────────────────────────────────
+Request: I'm an Australian traveller planning a trip to Tokyo, Japan...
 
-User: How's the weather in Tokyo right now?
-Agent: Tokyo currently has clear skies with a temperature of 72°F (22°C)...
+[Agent calls all 3 APIs and synthesizes a comprehensive briefing with
+ weather, country facts, AUD→JPY exchange rates, and travel tips]
 
-User: Tell me the current weather conditions in London.
-Agent: London is experiencing light rain with a temperature of 55°F (13°C)...
+──────────────────────────────────────────────────────────────────────
+🗺️  Briefing 2: Quick Paris Check
+──────────────────────────────────────────────────────────────────────
+Request: Quick check: what's the weather in Paris right now...
 
+[Agent returns a concise 3-bullet summary with weather and exchange rate]
+
+======================================================================
 Cleaning up...
-Agent deleted.
+✅ Agent deleted.
 ```
 
 ## Clean Up

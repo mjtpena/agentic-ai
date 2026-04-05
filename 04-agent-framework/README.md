@@ -1,6 +1,6 @@
-# Demo 4: Agent Framework with Azure OpenAI
+# Demo 4: Multi-Agent Orchestration with Agent Framework
 
-This demo provisions an Azure OpenAI resource and GPT-4o deployment, then uses the **Microsoft Agent Framework** SDK to create and run an agent in three different modes: basic, streaming, and ChatMessage.
+This demo provisions an Azure OpenAI resource and GPT-5.2 deployment, then uses the **Microsoft Agent Framework** SDK to demonstrate three advanced orchestration patterns: sequential pipelines, streaming with custom tools, and concurrent debate.
 
 ## Prerequisites
 
@@ -35,57 +35,83 @@ Edit `.env` with the deployment output values.
 pip install -r requirements.txt
 ```
 
-### Basic run (single response)
+### Sequential Pipeline — Multi-Agent Research
 
 ```bash
 python src/run_basic.py
 ```
 
-Creates a joke-telling agent and prints a single joke.
+A 3-agent sequential pipeline using `SequentialBuilder`:
 
-### Streaming run (token-by-token)
+1. **ResearchAgent** — gathers raw data on a topic (AI agent frameworks in 2026)
+2. **AnalystAgent** — synthesizes research into structured insights with risk assessment
+3. **ExecutiveBriefingAgent** — produces a polished C-suite summary with recommendations
+
+Each agent builds on the previous agent's output, passing context forward through the pipeline.
+
+### Streaming with Custom Function Tools
 
 ```bash
 python src/run_streaming.py
 ```
 
-Same agent, but streams the response as it's generated.
+A **FinancialAdvisor** agent with 3 custom Python functions exposed via `@ai_function`:
 
-### ChatMessage run (structured input)
+| Tool | Description |
+| --- | --- |
+| `calculate_compound_interest` | Computes compound interest with detailed breakdown |
+| `analyze_sentiment` | Keyword-based sentiment scoring of market text |
+| `generate_report_id` | Generates unique UUID-based report tracking IDs |
+
+The agent streams its response token-by-token while calling tools inline during generation.
+
+### Concurrent Debate + Judge
 
 ```bash
 python src/run_chat_message.py
 ```
 
-Sends a structured `ChatMessage` with `TextContent` to the agent.
+A multi-agent debate architecture using `ConcurrentBuilder` + `SequentialBuilder`:
+
+```
+┌─────────────┐
+│ User Topic   │
+└──────┬───────┘
+       │
+  ┌────┴────┐
+  ▼         ▼        (concurrent)
+[Bull]   [Bear]
+  │         │
+  └────┬────┘
+       ▼
+    [Judge]          (sequential)
+       │
+       ▼
+ Final Verdict
+```
+
+- **BullAnalyst** and **BearAnalyst** argue for/against a proposition concurrently
+- **JudgeAgent** receives both arguments via `ChatMessage` with `TextContent` and delivers a structured verdict with confidence score
 
 ## How It Works
 
 The Agent Framework provides a higher-level abstraction on top of Azure OpenAI:
 
-1. **`AzureOpenAIChatClient`** — Wraps the Azure OpenAI endpoint with Azure CLI credentials.
-2. **`create_agent()`** — Creates an agent with a name and instructions.
-3. **`agent.run()`** — Sends input and returns a complete response.
-4. **`agent.run_stream()`** — Sends input and yields streaming updates.
-5. **`ChatMessage`** — Allows structured multi-content input (text, images via URI, etc.).
+1. **`AzureOpenAIChatClient`** — wraps the Azure OpenAI endpoint with Azure CLI credentials
+2. **`create_agent()`** — creates an agent with a name, instructions, and optional tools
+3. **`agent.run()`** — sends input and returns a complete response
+4. **`agent.run_stream()`** — sends input and yields streaming updates
+5. **`ChatMessage`** — allows structured multi-content input (text, images via URI, etc.)
+6. **`SequentialBuilder`** — chains agents so each builds on the previous output
+7. **`ConcurrentBuilder`** — runs agents in parallel for fan-out patterns
 
-## Expected Output
+## Orchestration Patterns
 
-### Basic
-```
-Why did the pirate go to school? To improve his arrrticulation!
-```
-
-### Streaming
-```
-Why did the pirate... go to school?... To improve his arrrticulation!
-```
-(tokens appear progressively)
-
-### ChatMessage
-```
-Why do programmers prefer dark mode? Because light attracts bugs!
-```
+| Pattern | Script | Agents | Description |
+| --- | --- | --- | --- |
+| **Sequential** | `run_basic.py` | 3 | Research → Analysis → Briefing pipeline |
+| **Streaming + Tools** | `run_streaming.py` | 1 | Agent calls custom Python functions mid-stream |
+| **Concurrent + Sequential** | `run_chat_message.py` | 3 | Parallel debate → sequential judgment |
 
 ## Clean Up
 
